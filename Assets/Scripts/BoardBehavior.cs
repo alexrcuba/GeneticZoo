@@ -10,13 +10,16 @@ public class BoardBehavior : MonoBehaviour
 	public int startingHeight;
 	public int rowTimer;
 	public GameObject boardTile;
-	private GridTile[,] allBoardTiles;
+	public GameObject[] colors;
+	private GameObject[,] allBoardTiles;
 	private int currentRowTimer;
 	private Image countdownClock;
+	private  Vector2 tempPosition;
+
 	
     void Start()
     {
-        allBoardTiles = new GridTile[width,height];
+        allBoardTiles = new GameObject[width,height];
 		currentRowTimer = rowTimer;
 		countdownClock = this.gameObject.transform.GetChild(0).GetChild(0).GetComponent<Image>();
 		SetUp();
@@ -40,37 +43,42 @@ public class BoardBehavior : MonoBehaviour
     {
         for(int x = 0; x < width; x++){
 			for(int y = 0; y < height; y++){
-				Vector2 tempPosition = new Vector2(x,y);
+				tempPosition = new Vector2(x,y);
 				GameObject tile = Instantiate(boardTile, tempPosition, Quaternion.identity) as GameObject;
 				tile.transform.parent = this.transform;
-				tile.name = x + "," + y;
+				tile.name = "(" + x + "," + y + ")";
 				if(y < startingHeight){
-					tile.GetComponent<GridTile>().CreateColor();
+					CreateColor(x,y);
 				}
 			}
 		}
     }
 	
+	void CreateColor(int x, int y){
+		int colorToUse = Random.Range(0, colors.Length);
+		GameObject color = Instantiate(colors[colorToUse], tempPosition, Quaternion.identity);
+		color.transform.parent = this.transform;
+		color.name = x + "," + y;
+	}
+
 	void addNewRow(){
 		for(int x = (width-1); x >= 0; x--){
 			for(int y = (height-1); y >= 0; y--){
 				var name = x + "," + y;
-				var newParent = x + "," + (y+1);
-				//Debug.Log(name);
-				//Debug.Log(newParent);
-				Transform currentPiece = this.transform.Find(name + "/" + name);
-				Transform parentPiece = this.transform.Find(newParent);
-				if(currentPiece != null){
+				var newName = x + "," + (y+1);
+				GameObject currentPiece = GameObject.Find(name);
+				if(currentPiece != null && currentPiece.tag == "Color"){
 					if((y+1) >= height){
 						Debug.Log("GAME OVER!");
 						//Eventually will add game over Logic!
 						break;
 					}
-					currentPiece.parent = parentPiece.transform;
-					currentPiece.transform.position = currentPiece.transform.position + new Vector3(0.0f, 1.0f, 0.0f);
-					this.transform.Find(newParent + "/" + name).name = newParent;
+					currentPiece.transform.Translate(0,1,0);
+					//Debug.Log(currentPiece.name);
+					currentPiece.name = newName;
 					if(y == 0){
-						this.transform.Find(name).GetComponent<GridTile>().CreateColor();
+						tempPosition = new Vector2(x,y);
+						CreateColor(x,y);
 					}
 				}
 			}
