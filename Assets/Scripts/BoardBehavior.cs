@@ -11,7 +11,7 @@ public class BoardBehavior : MonoBehaviour
 	public int rowTimer;
 	public GameObject boardTile;
 	public GameObject[] colors;
-	private GameObject[,] allBoardTiles;
+	public GameObject[,] allBoardTiles;
 	private int currentRowTimer;
 	private Image countdownClock;
 	private  Vector2 tempPosition;
@@ -28,10 +28,6 @@ public class BoardBehavior : MonoBehaviour
 	void Update()
 	{
 		currentRowTimer--;
-		/*if((currentRowTimer % 1000) == 0){
-			Debug.Log(currentRowTimer);
-		}*/
-		//Debug.Log((float)currentRowTimer/(float)rowTimer);
 		countdownClock.fillAmount = 1-((float)currentRowTimer/(float)rowTimer);
 		if(currentRowTimer == 0){
 			addNewRow();
@@ -59,6 +55,7 @@ public class BoardBehavior : MonoBehaviour
 		GameObject color = Instantiate(colors[colorToUse], tempPosition, Quaternion.identity);
 		color.transform.parent = this.transform;
 		color.name = x + "," + y;
+		allBoardTiles[x,y] = color;
 	}
 
 	void addNewRow(){
@@ -74,8 +71,9 @@ public class BoardBehavior : MonoBehaviour
 						break;
 					}
 					currentPiece.transform.Translate(0,1,0);
-					//Debug.Log(currentPiece.name);
 					currentPiece.name = newName;
+					allBoardTiles[x,(y+1)] = currentPiece;
+					currentPiece.GetComponent<ColorTile>().UpdateCurrentLocOnNewRow();
 					if(y == 0){
 						tempPosition = new Vector2(x,y);
 						CreateColor(x,y);

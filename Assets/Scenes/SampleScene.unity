@@ -8200,7 +8200,7 @@ MonoBehaviour:
   width: 7
   height: 15
   startingHeight: 7
-  rowTimer: 100000
+  rowTimer: 8000
   boardTile: {fileID: 7441705254393798374, guid: 697f6a1f5932ed346a13850681febb07, type: 3}
   colors:
   - {fileID: 4035694028722356092, guid: 16a022f13d06dd045ba053c8f2619264, type: 3}
