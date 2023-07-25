@@ -12,13 +12,16 @@ public class BoardBehavior : MonoBehaviour
 	public GameObject boardTile;
 	public GameObject[] colors;
 	public GameObject[,] allBoardTiles;
+	public AudioSource music;
 	private int currentRowTimer;
 	private Image countdownClock;
 	private  Vector2 tempPosition;
+	private float pitchChange;
 
 	
     void Start()
     {
+		pitchChange = 1;
         allBoardTiles = new GameObject[width,height];
 		currentRowTimer = rowTimer;
 		countdownClock = this.gameObject.transform.GetChild(0).GetChild(0).GetComponent<Image>();
@@ -59,6 +62,8 @@ public class BoardBehavior : MonoBehaviour
 	}
 
 	void addNewRow(){
+		var pitchBendGroup = Resources.Load<UnityEngine.Audio.AudioMixerGroup>("SpeedUpSlowDown");
+		music.outputAudioMixerGroup = pitchBendGroup;
 		for(int x = (width-1); x >= 0; x--){
 			for(int y = (height-1); y >= 0; y--){
 				var name = x + "," + y;
@@ -68,6 +73,9 @@ public class BoardBehavior : MonoBehaviour
 					if((y+1) >= height){
 						Debug.Log("GAME OVER!");
 						//Eventually will add game over Logic!
+						pitchChange = 0.5f;
+						music.pitch = pitchChange;
+						pitchBendGroup.audioMixer.SetFloat("pitchBend", 1f / pitchChange);
 						break;
 					}
 					currentPiece.transform.Translate(0,1,0);
@@ -78,6 +86,9 @@ public class BoardBehavior : MonoBehaviour
 						tempPosition = new Vector2(x,y);
 						CreateColor(x,y);
 					}
+					pitchChange += 0.0015f;
+					music.pitch = pitchChange;
+					pitchBendGroup.audioMixer.SetFloat("pitchBend", 1f / pitchChange);
 				}
 			}
 		}
