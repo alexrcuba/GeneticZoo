@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -2278335646520250006}
   m_Layer: 0
   m_Name: Orange
-  m_TagString: Color
+  m_TagString: Orange
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -124,4 +124,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdca4def1cbdbc24590ba35148eb0f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentCol: 0
+  currentRow: 0
+  targetCol: 0
+  targetRow: 0
+  matchCheck: 0
   clickAngle: 0

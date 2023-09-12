@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 562751913618447823}
   m_Layer: 0
   m_Name: Background
-  m_TagString: Untagged
+  m_TagString: Background
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -97,10 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdca4def1cbdbc24590ba35148eb0f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colors:
-  - {fileID: 4035694028722356092, guid: 16a022f13d06dd045ba053c8f2619264, type: 3}
-  - {fileID: 2608149745098402101, guid: e1a6ece6e96785543bcb82052a1e34aa, type: 3}
-  - {fileID: 9222703547485821506, guid: 03b0b26d459ffa44d99604a2776aa891, type: 3}
-  - {fileID: 1531418314219492089, guid: 16298d85da17e934a93b5e5b8f699cba, type: 3}
-  - {fileID: 1817385139859822314, guid: 36d1f407338946d4c82c7a1e121f9d7b, type: 3}
-  - {fileID: 2181269647908893709, guid: 62e882d124c5c7846a6c0535d2656e4a, type: 3}
+  currentCol: 0
+  currentRow: 0
+  targetCol: 0
+  targetRow: 0
+  matchCheck: 0
+  clickAngle: 0

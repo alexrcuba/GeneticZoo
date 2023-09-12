@@ -17,7 +17,8 @@ public class BoardBehavior : MonoBehaviour
 	private Image countdownClock;
 	private  Vector2 tempPosition;
 	private float pitchChange;
-
+	private string[] listofColors = {"Red", "Orange", "Yellow", "Blue", "Green", "Purple"};
+	private bool gameOverCheck = false;
 	
     void Start()
     {
@@ -30,11 +31,13 @@ public class BoardBehavior : MonoBehaviour
 	
 	void Update()
 	{
-		currentRowTimer--;
-		countdownClock.fillAmount = 1-((float)currentRowTimer/(float)rowTimer);
-		if(currentRowTimer == 0){
-			addNewRow();
-			currentRowTimer = rowTimer;
+		if(!gameOverCheck){
+			currentRowTimer--;
+			countdownClock.fillAmount = 1-((float)currentRowTimer/(float)rowTimer);
+			if(currentRowTimer == 0){
+				addNewRow();
+				currentRowTimer = rowTimer;
+			}
 		}
 	}
 
@@ -69,26 +72,29 @@ public class BoardBehavior : MonoBehaviour
 				var name = x + "," + y;
 				var newName = x + "," + (y+1);
 				GameObject currentPiece = GameObject.Find(name);
-				if(currentPiece != null && currentPiece.tag == "Color"){
-					if((y+1) >= height){
-						Debug.Log("GAME OVER!");
-						//Eventually will add game over Logic!
-						pitchChange = 0.5f;
+				foreach( string currentColor in listofColors){
+					if(currentPiece != null && currentPiece.tag == currentColor && !gameOverCheck){
+						if((y+1) >= height){
+							Debug.Log("GAME OVER!");
+							//Eventually will add game over Logic!
+							pitchChange = 0.5f;
+							music.pitch = pitchChange;
+							pitchBendGroup.audioMixer.SetFloat("pitchBend", 1f / pitchChange);
+							gameOverCheck = true;
+							break;
+						}
+						currentPiece.transform.Translate(0,1,0);
+						currentPiece.name = newName;
+						allBoardTiles[x,(y+1)] = currentPiece;
+						currentPiece.GetComponent<ColorTile>().UpdateCurrentLocOnNewRow();
+						if(y == 0){
+							tempPosition = new Vector2(x,y);
+							CreateColor(x,y);
+						}
+						pitchChange += 0.0015f;
 						music.pitch = pitchChange;
 						pitchBendGroup.audioMixer.SetFloat("pitchBend", 1f / pitchChange);
-						break;
 					}
-					currentPiece.transform.Translate(0,1,0);
-					currentPiece.name = newName;
-					allBoardTiles[x,(y+1)] = currentPiece;
-					currentPiece.GetComponent<ColorTile>().UpdateCurrentLocOnNewRow();
-					if(y == 0){
-						tempPosition = new Vector2(x,y);
-						CreateColor(x,y);
-					}
-					pitchChange += 0.0015f;
-					music.pitch = pitchChange;
-					pitchBendGroup.audioMixer.SetFloat("pitchBend", 1f / pitchChange);
 				}
 			}
 		}
