@@ -15,6 +15,7 @@ public class ColorTile : MonoBehaviour
 	private Vector2 lastClick;
 	private Vector2 positionUpdate;
 	public float clickAngle = 0;
+	public float clickChecker = 1f;
 
 	void Start(){
 		gameBoard = FindObjectOfType<BoardBehavior>();
@@ -44,8 +45,10 @@ public class ColorTile : MonoBehaviour
 	}
 
 	private void FindAngle(){
-		clickAngle = Mathf.Atan2(lastClick.y - firstClick.y, lastClick.x - firstClick.x) * Mathf.Rad2Deg;
-		PieceMovementCalc();
+		if(Mathf.Abs(lastClick.y - firstClick.y) > clickChecker || Mathf.Abs(lastClick.x - firstClick.x) > clickChecker){
+			clickAngle = Mathf.Atan2(lastClick.y - firstClick.y, lastClick.x - firstClick.x) * Mathf.Rad2Deg;
+			PieceMovementCalc();
+		}
  	}
 
 	private void PieceMovementCalc(){
@@ -97,7 +100,6 @@ public class ColorTile : MonoBehaviour
 
 	public IEnumerator ValidMoveCoroutine(){
 		yield return new WaitForSeconds(.5f);
-		Debug.Log("CORUTINE");
 		if(otherColorTile != null){
 			if(!matchCheck && !otherColorTile.GetComponent<ColorTile>().matchCheck){
 				if(clickAngle > -45 && clickAngle <= 45 && currentCol <= gameBoard.width){//Right

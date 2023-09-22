@@ -10,7 +10,7 @@ public class BoardBehavior : MonoBehaviour
 	public int startingHeight;
 	public int rowTimer;
 	public GameObject boardTile;
-	public GameObject[] colors;
+	public List<GameObject> colors;
 	public GameObject[,] allBoardTiles;
 	public AudioSource music;
 	private int currentRowTimer;
@@ -57,7 +57,12 @@ public class BoardBehavior : MonoBehaviour
     }
 	
 	void CreateColor(int x, int y){
-		int colorToUse = Random.Range(0, colors.Length);
+		List<GameObject> tempColors = new List<GameObject>(colors);
+		int colorToUse = Random.Range(0, tempColors.Count);
+		while(startingMatches(x,y,colors[colorToUse])){
+			tempColors.RemoveAt(colorToUse);
+			colorToUse = Random.Range(0, tempColors.Count);
+		}
 		GameObject color = Instantiate(colors[colorToUse], tempPosition, Quaternion.identity);
 		color.transform.parent = this.transform;
 		color.name = x + "," + y;
@@ -98,5 +103,28 @@ public class BoardBehavior : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	private bool startingMatches(int col, int row, GameObject color){
+		if(col > 1 && row > 1){
+			if(allBoardTiles[col-1, row].tag == color.tag && allBoardTiles[col-2, row].tag == color.tag){
+				return true;
+			}
+			if(allBoardTiles[col, row-1].tag == color.tag && allBoardTiles[col, row-2].tag == color.tag){
+				return true;
+			}
+		}
+		if (col > 1)
+		{
+			if (allBoardTiles[col-1, row].tag == color.tag && allBoardTiles[col-2, row].tag == color.tag){
+				return true;
+			}
+		}
+		if( row > 1){
+			if (allBoardTiles[col, row-1].tag == color.tag && allBoardTiles[col, row-2].tag == color.tag){
+				return true;
+			}
+		}
+        return false;
 	}
 }
