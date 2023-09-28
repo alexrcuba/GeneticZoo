@@ -19,6 +19,7 @@ public class BoardBehavior : MonoBehaviour
 	private float pitchChange;
 	private string[] listofColors = {"Red", "Orange", "Yellow", "Blue", "Green", "Purple"};
 	private bool gameOverCheck = false;
+	private bool rowLogic = false;
 	
     void Start()
     {
@@ -36,6 +37,9 @@ public class BoardBehavior : MonoBehaviour
 			countdownClock.fillAmount = 1-((float)currentRowTimer/(float)rowTimer);
 			if(currentRowTimer == 0){
 				addNewRow();
+				if(rowTimer > 1000){
+					rowTimer -= 1000;
+				}
 				currentRowTimer = rowTimer;
 			}
 		}
@@ -70,9 +74,10 @@ public class BoardBehavior : MonoBehaviour
 	}
 
 	void addNewRow(){
+		rowLogic = true;
 		var pitchBendGroup = Resources.Load<UnityEngine.Audio.AudioMixerGroup>("SpeedUpSlowDown");
 		music.outputAudioMixerGroup = pitchBendGroup;
-		for(int x = (width-1); x >= 0; x--){
+		for(int x = 0; x < width; x++){
 			for(int y = (height-1); y >= 0; y--){
 				var name = x + "," + y;
 				var newName = x + "," + (y+1);
@@ -106,7 +111,15 @@ public class BoardBehavior : MonoBehaviour
 	}
 
 	private bool startingMatches(int col, int row, GameObject color){
-		if(col > 1 && row > 1){
+		if(rowLogic){
+			if(col > 1 && allBoardTiles[col-1, row].tag == color.tag && allBoardTiles[col-2, row].tag == color.tag){
+				return true;
+			}
+			if(allBoardTiles[col, row+1].tag == color.tag && allBoardTiles[col, row+2].tag == color.tag){
+				return true;
+			}
+		}
+		else if(col > 1 && row > 1){
 			if(allBoardTiles[col-1, row].tag == color.tag && allBoardTiles[col-2, row].tag == color.tag){
 				return true;
 			}
@@ -114,17 +127,60 @@ public class BoardBehavior : MonoBehaviour
 				return true;
 			}
 		}
-		if (col > 1)
+		else if (col > 1)
 		{
 			if (allBoardTiles[col-1, row].tag == color.tag && allBoardTiles[col-2, row].tag == color.tag){
 				return true;
 			}
 		}
-		if( row > 1){
+		else if( row > 1){
 			if (allBoardTiles[col, row-1].tag == color.tag && allBoardTiles[col, row-2].tag == color.tag){
 				return true;
 			}
 		}
         return false;
 	}
+
+	private void DestroyMatch(int col, int row){
+		if(allBoardTiles[col, row].GetComponent<ColorTile>().matchCheck){
+			Destroy(allBoardTiles[col, row]);
+			allBoardTiles[col, row] = null;
+		}
+	}
+
+	public void CheckIfDestroy(){
+		for(int x = 0; x < width; x++){
+			for(int y = 0; y < height; y++){
+				if(allBoardTiles[x, y] != null){
+					DestroyMatch(x,y);
+				}
+			}
+		}
+		StartCoroutine(RemoveOldRow());
+	}
+
+	private IEnumerator RemoveOldRow(){
+		int emptyCount = 0;
+		for(int x = 0; x < width; x++){
+			for(int y = 0; y < height; y++){
+				if(allBoardTiles[x, y] == null){
+					emptyCount++;
+				}
+				else if(emptyCount > 0){
+					var name = x + "," + y;
+					var newName = x + "," + (y-emptyCount);
+					GameObject currentPiece = GameObject.Find(name);
+					if(currentPiece != null){
+						currentPiece.transform.Translate(0,-emptyCount,0);
+						currentPiece.name = newName;
+						allBoardTiles[x,(y-emptyCount)] = currentPiece;
+						currentPiece.GetComponent<ColorTile>().UpdateCurrentLocOnNewRow();
+					}
+				}
+			}
+			emptyCount = 0;
+		}
+		yield return new WaitForSeconds(.4f);
+	}
+
 }

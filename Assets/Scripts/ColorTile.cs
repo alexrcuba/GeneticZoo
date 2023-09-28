@@ -115,6 +115,9 @@ public class ColorTile : MonoBehaviour
 					PieceMovementConfirm(1,0);
 				}
 			}
+			else{
+				gameBoard.CheckIfDestroy();
+			}
 			otherColorTile = null;
 		}
 
@@ -124,7 +127,7 @@ public class ColorTile : MonoBehaviour
 		if(currentCol > 0 && currentCol < gameBoard.width - 1){
 			GameObject leftColor = gameBoard.allBoardTiles[currentCol - 1, currentRow];
 			GameObject rightColor = gameBoard.allBoardTiles[currentCol + 1, currentRow];
-			if(leftColor.tag == this.gameObject.tag && rightColor.tag == this.gameObject.tag){
+			if(leftColor != null && rightColor != null && leftColor.tag == this.gameObject.tag && rightColor.tag == this.gameObject.tag){
 				leftColor.GetComponent<ColorTile>().matchCheck = true;
 				rightColor.GetComponent<ColorTile>().matchCheck = true;
 				matchCheck = true;
@@ -133,7 +136,7 @@ public class ColorTile : MonoBehaviour
 		if(currentRow > 0 && currentRow < gameBoard.height - 1){
 			GameObject aboveColor = gameBoard.allBoardTiles[currentCol, currentRow + 1];
 			GameObject belowColor = gameBoard.allBoardTiles[currentCol, currentRow - 1];
-			if(aboveColor != null && aboveColor.tag == this.gameObject.tag && belowColor.tag == this.gameObject.tag){
+			if(aboveColor != null && belowColor != null && aboveColor.tag == this.gameObject.tag && belowColor.tag == this.gameObject.tag){
 				aboveColor.GetComponent<ColorTile>().matchCheck = true;
 				belowColor.GetComponent<ColorTile>().matchCheck = true;
 				matchCheck = true;
