@@ -68,18 +68,20 @@ public class ColorTile : MonoBehaviour
 
 	private void PieceMovementConfirm(int movementCol, int movementRow){
 		otherColorTile = gameBoard.allBoardTiles[currentCol + movementCol, currentRow + movementRow];
-        otherColorTile.GetComponent<ColorTile>().currentCol -= movementCol;
-        otherColorTile.GetComponent<ColorTile>().currentRow -= movementRow;
-		otherColorTile.GetComponent<ColorTile>().OtherPieceMovementConfirm();
-        currentCol += movementCol;
-		currentRow += movementRow;
-		targetCol = currentCol;
-		targetRow = currentRow;
-		positionUpdate = new Vector2(targetCol, targetRow);
-		transform.position = positionUpdate;
-		name = targetCol + "," + targetRow;
-		gameBoard.allBoardTiles[currentCol, currentRow] = this.gameObject;
-		StartCoroutine(ValidMoveCoroutine());
+		if(otherColorTile != null){
+			otherColorTile.GetComponent<ColorTile>().currentCol -= movementCol;
+			otherColorTile.GetComponent<ColorTile>().currentRow -= movementRow;
+			otherColorTile.GetComponent<ColorTile>().OtherPieceMovementConfirm();
+			currentCol += movementCol;
+			currentRow += movementRow;
+			targetCol = currentCol;
+			targetRow = currentRow;
+			positionUpdate = new Vector2(targetCol, targetRow);
+			transform.position = positionUpdate;
+			name = targetCol + "," + targetRow;
+			gameBoard.allBoardTiles[currentCol, currentRow] = this.gameObject;
+			StartCoroutine(ValidMoveCoroutine());
+		}
 	}
 
 	public void OtherPieceMovementConfirm(){
