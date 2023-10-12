@@ -9,6 +9,7 @@ public class ColorTile : MonoBehaviour
 	public int targetCol;
 	public int targetRow;
 	public bool matchCheck = false;
+	private MatchFinder findingMatches;
 	private BoardBehavior gameBoard;
 	private GameObject otherColorTile;
 	private Vector2 firstClick;
@@ -19,6 +20,7 @@ public class ColorTile : MonoBehaviour
 
 	void Start(){
 		gameBoard = FindObjectOfType<BoardBehavior>();
+		findingMatches = FindObjectOfType<MatchFinder>();
 		targetCol = (int)transform.position.x;
 		targetRow = (int)transform.position.y;
 		currentCol = targetCol;
@@ -27,7 +29,6 @@ public class ColorTile : MonoBehaviour
 
 	void Update(){
 		if(this.gameObject.tag != "Background"){
-		lookForMatches();
 		if(matchCheck){
 			SpriteRenderer renderColor = GetComponent<SpriteRenderer>();
 			renderColor.color = new Color(1f, 1f, 1f, 0.5f);
@@ -80,6 +81,7 @@ public class ColorTile : MonoBehaviour
 			transform.position = positionUpdate;
 			name = targetCol + "," + targetRow;
 			gameBoard.allBoardTiles[currentCol, currentRow] = this.gameObject;
+			findingMatches.FindingAllMatches();
 			StartCoroutine(ValidMoveCoroutine());
 		}
 	}
@@ -91,6 +93,7 @@ public class ColorTile : MonoBehaviour
 		transform.position = positionUpdate;
 		name = targetCol + "," + targetRow;
 		gameBoard.allBoardTiles[currentCol, currentRow] = this.gameObject;
+		findingMatches.FindingAllMatches();
 	}
 
 	public void UpdateCurrentLocOnNewRow(){
@@ -123,26 +126,5 @@ public class ColorTile : MonoBehaviour
 			otherColorTile = null;
 		}
 
-	}
-
-	void lookForMatches(){
-		if(currentCol > 0 && currentCol < gameBoard.width - 1){
-			GameObject leftColor = gameBoard.allBoardTiles[currentCol - 1, currentRow];
-			GameObject rightColor = gameBoard.allBoardTiles[currentCol + 1, currentRow];
-			if(leftColor != null && rightColor != null && leftColor.tag == this.gameObject.tag && rightColor.tag == this.gameObject.tag){
-				leftColor.GetComponent<ColorTile>().matchCheck = true;
-				rightColor.GetComponent<ColorTile>().matchCheck = true;
-				matchCheck = true;
-			}
-		}
-		if(currentRow > 0 && currentRow < gameBoard.height - 1){
-			GameObject aboveColor = gameBoard.allBoardTiles[currentCol, currentRow + 1];
-			GameObject belowColor = gameBoard.allBoardTiles[currentCol, currentRow - 1];
-			if(aboveColor != null && belowColor != null && aboveColor.tag == this.gameObject.tag && belowColor.tag == this.gameObject.tag){
-				aboveColor.GetComponent<ColorTile>().matchCheck = true;
-				belowColor.GetComponent<ColorTile>().matchCheck = true;
-				matchCheck = true;
-			}
-		}
 	}
 }

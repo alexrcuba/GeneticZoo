@@ -14,9 +14,11 @@ public class BoardBehavior : MonoBehaviour
 	public int scoreGoal;
 	public List<GameObject> colors;
 	public GameObject[,] allBoardTiles;
+	public bool foundMatch = false;
 	public AudioSource music;
 	private int currentRowTimer;
 	private Image countdownClock;
+	private MatchFinder findingMatches;
 	private TextMeshProUGUI scoreText;
 	private  Vector2 tempPosition;
 	private float pitchChange;
@@ -30,6 +32,7 @@ public class BoardBehavior : MonoBehaviour
 
     void Start()
     {
+		findingMatches = FindObjectOfType<MatchFinder>();
 		pitchChange = 1;
         allBoardTiles = new GameObject[width,height];
 		currentRowTimer = rowTimer;
@@ -167,6 +170,7 @@ public class BoardBehavior : MonoBehaviour
 	}
 
 	public void CheckIfDestroy(){
+		foundMatch = false;
 		for(int x = 0; x < width; x++){
 			for(int y = 0; y < height; y++){
 				if(allBoardTiles[x, y] != null){
@@ -175,7 +179,6 @@ public class BoardBehavior : MonoBehaviour
 			}
 		}
 		foreach(string color in listofColors){
-			//Debug.Log(color + ": " + TilesInMatch[color]);
 			while(TilesInMatch[color] > 0){
 				if(TilesInMatch[color] > 5){
 					PointsPerValue[color] += 4;
@@ -196,7 +199,6 @@ public class BoardBehavior : MonoBehaviour
 				TilesInMatch[color] -= 1;
 			};
 		}
-		Debug.Log("Total Score: " + totalScore);
 		scoreText.SetText(
 		"TOTAL SCORE: " + totalScore + " / " + scoreGoal + 
 		"\n\n" + listofColors[0] + " Score: " + PointsPerValue[listofColors[0]] +
@@ -211,6 +213,12 @@ public class BoardBehavior : MonoBehaviour
 			gameWinCheck = true;
 		}
 		StartCoroutine(RemoveOldRow());
+		findingMatches.FindingAllMatchesBoard();
+		Debug.Log(foundMatch);
+		if(foundMatch){
+			Debug.Log("COMBO FOUND");
+			StartCoroutine(Waiting());
+		};
 	}
 
 	private IEnumerator RemoveOldRow(){
@@ -235,6 +243,11 @@ public class BoardBehavior : MonoBehaviour
 			emptyCount = 0;
 		}
 		yield return new WaitForSeconds(.4f);
+	}
+
+	private IEnumerator Waiting(){
+		yield return new WaitForSeconds(.6f);
+		CheckIfDestroy();
 	}
 
 }
