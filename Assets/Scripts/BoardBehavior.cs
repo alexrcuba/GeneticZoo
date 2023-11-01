@@ -16,6 +16,9 @@ public class BoardBehavior : MonoBehaviour
 	public GameObject[,] allBoardTiles;
 	public bool foundMatch = false;
 	public AudioSource music;
+	public AudioSource matchSFX;
+	public AudioSource gameOverM;
+	public AudioSource gameWinM;
 	private int currentRowTimer;
 	private Image countdownClock;
 	private MatchFinder findingMatches;
@@ -107,9 +110,8 @@ public class BoardBehavior : MonoBehaviour
 						if((y+1) >= height){
 							scoreText.SetText("GAME OVER!");
 							//Eventually will add game over Logic!
-							pitchChange = 0.5f;
-							music.pitch = pitchChange;
-							pitchBendGroup.audioMixer.SetFloat("pitchBend", 1f / pitchChange);
+							music.Stop();
+							gameOverM.Play();
 							gameOverCheck = true;
 							break;
 						}
@@ -165,6 +167,7 @@ public class BoardBehavior : MonoBehaviour
 		if(allBoardTiles[col, row].GetComponent<ColorTile>().matchCheck){
 			TilesInMatch[allBoardTiles[col,row].GetComponent<ColorTile>().tag] += 1;
 			Destroy(allBoardTiles[col, row]);
+			matchSFX.Play();
 			allBoardTiles[col, row] = null;
 		}
 	}
@@ -210,6 +213,8 @@ public class BoardBehavior : MonoBehaviour
 		);
 		if(totalScore >= scoreGoal){
 			scoreText.SetText("YOU WIN!");
+			music.Stop();
+			gameWinM.Play();
 			gameWinCheck = true;
 		}
 		StartCoroutine(RemoveOldRow());
